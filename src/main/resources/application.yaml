@@ -1,0 +1,69 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: Smart Code Reviewer
+  ai:
+    # 如果使用阿里云百炼 (Qwen)
+    dashscope:
+      api-key: ${DASHSCOPE_API_KEY}
+    alibaba:
+    #dashscope:   # ⚠️ M6.1 版本必须使用 dashscope 前缀，而不是 alibaba
+      api-key: ${DASHSCOPE_API_KEY} # 环境变量注入
+      chat:
+        options:
+          model: qwen-coder-plus # 推荐用于代码的模型
+          temperature: 0.3       # 代码生成需要较低的温度以保证准确性
+    # 如果想用 DeepSeek (Spring AI Alibaba 目前主要优化 Qwen，若需 DeepSeek 可通用 ChatClient 配置或切换 Starter)
+    # 注意：Spring AI 社区版有 openai starter，DeepSeek 兼容 OpenAI 协议。
+    # 这里演示一种通用策略：如果要用 DeepSeek，可以使用 spring-ai-openai-starter 并修改 base-url
+    # 为了本教程统一，我们假设使用 Qwen-Coder，因为它对中文和 Java 支持极好。
+    # 若要切换 DeepSeek，只需更改 api-key 和 model 名称，并确保 endpoint 兼容。
+
+app:
+  github:
+    token: ${GITHUB_TOKEN} # 拥有 repo 权限的 Personal Access Token
+    webhook-secret: ${WEBHOOK_SECRET} # 用于验证 Webhook 签名 (可选但推荐)
+  ai:
+    # 自定义 Prompt 模板
+    review-prompt-template: |
+      # Role
+      你是一位拥有 15 年经验的 Java 架构师和安全专家。
+      
+      # Task
+      审查以下 Git Diff，输出严格的 JSON。
+      
+      # ⚠️ 重要约束 (防止截断)
+      1. **必须输出完整的合法 JSON**，严禁在中间截断。
+      2. 如果 `fixed_code` 内容过长，**请省略该字段**或只保留核心修改行（使用 `// ...` 省略无关代码）。
+      3. **严禁**输出 Markdown 标记（如 ```json）。
+      4. `severity` 只能是：CRITICAL, HIGH, MEDIUM, LOW。
+      5. 确保所有字符串中的换行符使用 `\n` 转义。
+      
+      # Coding Standards
+      - 禁止除零操作。
+      - 禁止空指针风险。
+      - 禁止吞掉异常。
+      
+      # Input Diff
+      {{code_diff}}
+      
+      # Output JSON Schema
+      {
+        "summary": "简短总结",
+        "issues": [
+          {
+            "file": "文件名",
+            "line": 行号 (整数),
+            "severity": "等级",
+            "message": "问题描述",
+            "suggestion": "建议",
+            "fixed_code": "可选，若太长则留空或省略"
+          }
+        ],
+        "documentation": { "needs_update": false, "content": "" }
+      }
+      
+      请开始分析：
+      直接输出 JSON：

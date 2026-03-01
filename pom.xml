@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.3.5</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.ai</groupId>
+	<artifactId>smart-code-reviewer</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Smart Code Reviewer</name>
+	<description>AI-powered Code Review and Doc Gen based on Spring AI &amp; DeepSeek/Qwen</description>
+
+	<properties>
+		<java.version>21</java.version>
+		<spring-ai-alibaba.version>1.0.0-M6.1</spring-ai-alibaba.version> <!-- 请检查最新稳定版 -->
+	</properties>
+	<dependencies>
+		<!-- 1. Spring AI Alibaba (支持 Qwen, 也可通过 BaseUrl 适配 DeepSeek) -->
+		<dependency>
+			<groupId>com.alibaba.cloud.ai</groupId>
+			<artifactId>spring-ai-alibaba-starter</artifactId>
+			<version>${spring-ai-alibaba.version}</version>
+		</dependency>
+
+		<!-- 2. Web 支持 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- 3. GitHub API 客户端 (用于获取 Diff 和 发送评论) -->
+		<dependency>
+			<groupId>org.kohsuke</groupId>
+			<artifactId>github-api</artifactId>
+			<version>1.323</version>
+		</dependency>
+
+		<!-- 4. Lombok (简化代码) -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- 5. JSON 处理 (Jackson 已包含在 web starter 中，但可能需要额外配置) -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>aliyun</id>
+			<url>https://maven.aliyun.com/repository/public</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
